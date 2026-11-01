@@ -1,46 +1,30 @@
-From c7b61b5f62e05e18864e6693b0bb2ad9ef9012a4 Mon Sep 17 00:00:00 2001
+From 2ed8b2567e4f83c389af339c3c9a3934a93c37ef Mon Sep 17 00:00:00 2001
 From: primez <mpincoski@gmail.com>
-Date: Sat, 31 Oct 2026 06:24:22 -0600
+Date: Sun, 1 Nov 2026 08:02:53 -0700
 Subject: [PATCH] [HLSTree] Sum the exact EXTINF durations for the segment
  times
 
-The parser truncated each EXTINF duration to whole ms at float precision
-and chained the next segment from the truncated end. With EXTINF values
-such as 4.5045 or 6.006, the segment times drifted from the media time,
-about 0.18 s after 44 minutes of a real stream. A seek 40 ms before a
-segment start then converted the seek time with the diff of the current
-segment and continued at the next segment.
-
-Each segment time is now the exact sum of the durations since the last
+Each segment time is the exact sum of the durations since the last
 EXT-X-PROGRAM-DATE-TIME, rounded to ms. FixMediaSequence and
-FixDiscSequence compute the same sums, so they still match the segment
-times.
+FixDiscSequence compute the same sums.
+
+- Fix the segment times of HLS streams with EXTINF durations finer than
+  1 ms, which drifted from the media time (0.24 s after one hour of a
+  YouTube stream), so a seek near a segment start could continue at the
+  next segment
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 ---
- inputstream.adaptive/changelog.txt            |  1 +
  src/parser/HLSTree.cpp                        | 55 +++++++++++--------
  src/test/TestHLSTree.cpp                      | 42 +++++++++++++-
  .../hls/ts_fractional_extinf_stream.m3u8      | 40 ++++++++++++++
  .../manifests/hls/ts_live_pdt_stream.m3u8     | 13 +++++
  .../ts_live_pdt_stream_wrong_sequence.m3u8    | 15 +++++
- 6 files changed, 143 insertions(+), 23 deletions(-)
+ 5 files changed, 142 insertions(+), 23 deletions(-)
  create mode 100644 src/test/manifests/hls/ts_fractional_extinf_stream.m3u8
  create mode 100644 src/test/manifests/hls/ts_live_pdt_stream.m3u8
  create mode 100644 src/test/manifests/hls/ts_live_pdt_stream_wrong_sequence.m3u8
 
-diff --git a/inputstream.adaptive/changelog.txt b/inputstream.adaptive/changelog.txt
-index 2bd17fc..069493e 100644
---- a/inputstream.adaptive/changelog.txt
-+++ b/inputstream.adaptive/changelog.txt
-@@ -24,6 +24,7 @@ v21.5.25-p3i.4 (2026-10-31)
- - Fix the last frame of a TS segment or stream whose parameter sets came in a PES of their own, which was read as two frames
- - Fix a seek in a TS stream to a key frame whose picture PES starts in the next segment, which returned that key frame twice
- - Fix a live seek in a TS stream that waited more than once for the next segment, which lost the first audio frame of an audio PES across the two segments
-+- Fix the segment times of HLS streams with EXTINF durations finer than 1 ms, which drifted from the media time (0.24 s after one hour of a YouTube stream), so a seek near a segment start could continue at the next segment
- 
- v21.5.25-p3i.3 (2026-10-30)
- - Fix a seek in a live HLS stream that ended the audio when the next audio segment was not available yet
 diff --git a/src/parser/HLSTree.cpp b/src/parser/HLSTree.cpp
 index 19293b7..23ad39b 100644
 --- a/src/parser/HLSTree.cpp
