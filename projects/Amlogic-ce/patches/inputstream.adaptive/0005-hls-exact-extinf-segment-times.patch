@@ -1,6 +1,6 @@
-From 2ed8b2567e4f83c389af339c3c9a3934a93c37ef Mon Sep 17 00:00:00 2001
+From b5854952873ed3349219a64913073f902a4da819 Mon Sep 17 00:00:00 2001
 From: primez <mpincoski@gmail.com>
-Date: Sun, 1 Nov 2026 08:02:53 -0700
+Date: Sun, 1 Nov 2026 09:32:15 -0700
 Subject: [PATCH] [HLSTree] Sum the exact EXTINF durations for the segment
  times
 

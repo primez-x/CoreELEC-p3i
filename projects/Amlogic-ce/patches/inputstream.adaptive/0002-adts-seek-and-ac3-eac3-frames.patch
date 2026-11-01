@@ -1,6 +1,6 @@
-From af18e7b4ddfb7e9c3ea2dfb24877b20d29719786 Mon Sep 17 00:00:00 2001
+From a0c3e14efdd6a5d8c03652f83f563ec6210dd541 Mon Sep 17 00:00:00 2001
 From: primez <mpincoski@gmail.com>
-Date: Sun, 1 Nov 2026 08:02:53 -0700
+Date: Sun, 1 Nov 2026 09:32:15 -0700
 Subject: [PATCH] [ADTSReader] Seek HLS packed audio to the target, and read
  AC-3 and E-AC-3 frames whole
 

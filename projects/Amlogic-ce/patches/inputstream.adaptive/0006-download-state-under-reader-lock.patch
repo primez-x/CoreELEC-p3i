@@ -1,6 +1,6 @@
-From 52ccce78b10d9d869dfcc05ad90037cfd5c68e64 Mon Sep 17 00:00:00 2001
+From 7e7324b69ca8ff48ac2d675c56213f3c7ee5b56b Mon Sep 17 00:00:00 2001
 From: primez <mpincoski@gmail.com>
-Date: Sun, 1 Nov 2026 08:02:53 -0700
+Date: Sun, 1 Nov 2026 09:32:15 -0700
 Subject: [PATCH] [AdaptiveStream] Change the download state under the lock of
  the readers
 
